@@ -5,11 +5,14 @@ import TabManager from './modules/tab_manager.js';
 import CopyManager from './modules/copy_manager.js';
 import NotificationManager from './modules/notification_manager.js';
 import ResizerManager from './modules/resizer_manager.js';
-import ComponentManager from './modules/component_manager.js';
-import CanvasManager from './modules/canvas_manager.js';
+import ComponentManager from './modules/component_manager.js?v=20260604-dropfix';
+import CanvasManager from './modules/canvas_manager.js?v=20260604-dropfix';
+import applyCanvasRuntimePatch from './modules/canvas_runtime_patch.js?v=20260605-runtimepatch';
 import HistoryManager from './modules/history_manager.js';
-import ExportManager from './modules/export_manager.js';
+import ExportManager from './modules/export_manager.js?v=20260604-dropfix';
 import ErrorHandler from './modules/error_handler.js';
+
+applyCanvasRuntimePatch(CanvasManager);
 
 class App {
     constructor() {
@@ -73,8 +76,7 @@ class App {
     async initializeComponents() {
         try {
             this.managers.component = new ComponentManager(this.managers.notification);
-            // ComponentManager initializes itself, so we wait for it to complete
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await this.managers.component.ready;
         } catch (error) {
             console.error('Failed to initialize components:', error);
             throw new Error('Component initialization failed');

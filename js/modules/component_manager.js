@@ -8,7 +8,7 @@ class ComponentManager {
         this.jsComponents = [];
         this.apiComponents = [];
         this.dropdownManager = null;
-        this.init();
+        this.ready = this.init();
     }
 
     /**
@@ -349,12 +349,12 @@ class ComponentManager {
                 data.js = item.JS;
             }
             
-            // Safari/macOS is more reliable with text/plain payloads.
-            const serialized = JSON.stringify(data);
-            e.dataTransfer.setData('text/plain', serialized);
-            e.dataTransfer.setData('application/json', serialized);
-            e.dataTransfer.setData('text/html', serialized);
+            const serializedData = JSON.stringify(data);
+            e.dataTransfer.setData('application/json', serializedData);
+            e.dataTransfer.setData('text/plain', serializedData);
+            e.dataTransfer.setData('text/html', serializedData);
             e.dataTransfer.effectAllowed = 'copy';
+            window.DesignITDraggedComponent = data;
             
             // Add visual feedback
             element.classList.add('dragging');
@@ -362,6 +362,7 @@ class ComponentManager {
 
         element.addEventListener('dragend', () => {
             element.classList.remove('dragging');
+            window.DesignITDraggedComponent = null;
         });
 
         // Add keyboard support
